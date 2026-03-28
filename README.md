@@ -11,7 +11,7 @@ Talk or type with an AI assistant. Supports voice input and spoken responses.
 - **Voice input** — click the mic button, speak, and it auto-submits after 2 seconds of silence
 - **Text input** — type and press Enter or Send
 - **Spoken responses** — the assistant's reply is read aloud sentence by sentence as it streams
-- **Conversation history** — each session keeps the last 10 exchanges in context
+- **Conversation history** — full conversation is displayed; the last 10 exchanges are sent to the LLM as context when generating each response
 - **New conversation** — start fresh with the + button; previous sessions appear in the History sidebar
 
 ### Intelligence Inspector
