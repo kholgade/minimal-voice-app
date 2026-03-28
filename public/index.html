@@ -52,9 +52,15 @@
     <main id="canvas">
       <div class="canvas-hd">
         <span class="canvas-title">The Canvas</span>
-        <div class="status-pill">
-          <span id="status-dot" class="status-dot"></span>
-          <span id="status-text">Connecting…</span>
+        <div class="canvas-hd-right">
+          <button class="live-cards-btn">
+            Live cards
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M7 10l5 5 5-5z"/></svg>
+          </button>
+          <div class="status-pill">
+            <span id="status-dot" class="status-dot"></span>
+            <span id="status-text">Connecting…</span>
+          </div>
         </div>
       </div>
 
@@ -65,23 +71,23 @@
           <span class="ghost-label">Ghost Text</span>
           <span id="ghost-text" class="ghost-text"></span>
         </div>
-        <div id="input-bar">
-          <div id="waveform" class="hidden">
-            <span class="wbar"></span>
-            <span class="wbar"></span>
-            <span class="wbar"></span>
-            <span class="wbar"></span>
-            <span class="wbar"></span>
-            <span class="wbar"></span>
-            <span class="wbar"></span>
-            <span class="wbar"></span>
-            <span class="wbar"></span>
+        <div id="input-row">
+          <div id="input-bar">
+            <input id="text-field" class="text-input" type="text" placeholder="Ask anything…"
+                   onkeydown="if(event.key==='Enter')sendText()">
+            <button id="send-btn" class="send-btn" onclick="sendText()">Send</button>
           </div>
-          <input id="text-field" class="text-input" type="text" placeholder="Ask anything…"
-                 onkeydown="if(event.key==='Enter')sendText()">
-          <button id="send-btn" class="send-btn" onclick="sendText()">Send</button>
-          <button id="mic-btn" class="mic-btn" onclick="toggleRecording()" title="Record">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+          <button id="mic-btn" onclick="toggleRecording()" title="Record">
+            <span class="mic-ripple"></span>
+            <span class="mic-ripple"></span>
+            <div id="waveform" class="hidden">
+              <span class="wbar"></span>
+              <span class="wbar"></span>
+              <span class="wbar"></span>
+              <span class="wbar"></span>
+              <span class="wbar"></span>
+            </div>
+            <svg id="mic-svg" width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
               <path d="M12 1a4 4 0 0 1 4 4v6a4 4 0 0 1-8 0V5a4 4 0 0 1 4-4zm6.5 9a.5.5 0 0 1 .5.5A7 7 0 0 1 12.5 17v2.5H15a.5.5 0 0 1 0 1H9a.5.5 0 0 1 0-1h2.5V17A7 7 0 0 1 5 10.5a.5.5 0 0 1 1 0 6 6 0 0 0 12 0 .5.5 0 0 1 .5-.5z"/>
             </svg>
           </button>

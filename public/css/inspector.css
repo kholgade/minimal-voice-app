@@ -68,14 +68,39 @@
 
 /* ── Action items ───────────────────────────────────── */
 .action-item {
+  display:         flex;
+  align-items:     center;
+  gap:             var(--sp-2);
+  padding:         var(--sp-2) var(--sp-4);
+  font-size:       var(--text-sm);
+  cursor:          pointer;
+  transition:      background var(--ease);
+  justify-content: space-between;
+}
+
+.action-item-text {
   display:     flex;
   align-items: center;
   gap:         var(--sp-2);
-  padding:     var(--sp-2) var(--sp-4);
-  font-size:   var(--text-sm);
-  cursor:      pointer;
-  transition:  background var(--ease);
+  flex:        1;
 }
+
+/* ── Due date badge ─────────────────────────────────── */
+.due-badge {
+  display:       flex;
+  align-items:   center;
+  gap:           3px;
+  padding:       2px var(--sp-2);
+  background:    var(--clr-card);
+  border:        1px solid var(--clr-border);
+  border-radius: var(--radius-sm);
+  font-size:     var(--text-xs);
+  color:         var(--clr-muted);
+  white-space:   nowrap;
+  flex-shrink:   0;
+}
+
+.due-badge svg { opacity: 0.6; }
 
 .action-item:hover { background: var(--clr-card); }
 

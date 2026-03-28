@@ -192,6 +192,7 @@ async function startRecording() {
   document.getElementById('mic-btn').classList.add('active');
   document.getElementById('input-bar').classList.add('recording');
   document.getElementById('waveform').classList.remove('hidden');
+  document.getElementById('mic-svg').classList.add('hidden');
   document.getElementById('text-field').placeholder = 'Listening…';
   setStatus('Listening…', 'busy');
   monitorSilence();
@@ -225,6 +226,7 @@ function stopRecording() {
   document.getElementById('mic-btn').classList.remove('active');
   document.getElementById('input-bar').classList.remove('recording');
   document.getElementById('waveform').classList.add('hidden');
+  document.getElementById('mic-svg').classList.remove('hidden');
   document.getElementById('text-field').placeholder = 'Ask anything…';
   setStatus('Transcribing…', 'busy');
 }
@@ -311,8 +313,8 @@ function addSessionCard(title, id, sparkColor) {
       </svg>
     </div>
     <div class="sc-foot">
-      <button class="sc-icon-btn" title="Voice">🎤</button>
-      <button class="sc-icon-btn" title="Transcript">⊡</button>
+      <button class="sc-icon-btn" title="Voice"><svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M12 1a3 3 0 0 1 3 3v8a3 3 0 0 1-6 0V4a3 3 0 0 1 3-3zm5.5 9a.5.5 0 0 1 .5.5A6 6 0 0 1 12.5 16v2H15a.5.5 0 0 1 0 1H9a.5.5 0 0 1 0-1h2.5v-2A6 6 0 0 1 6 10.5a.5.5 0 0 1 1 0 5 5 0 0 0 10 0 .5.5 0 0 1 .5-.5z"/></svg></button>
+      <button class="sc-icon-btn" title="Transcript"><svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/></svg></button>
     </div>`;
 
   // Mark previous cards inactive

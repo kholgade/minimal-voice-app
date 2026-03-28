@@ -24,6 +24,33 @@
   font-size:   var(--text-md);
 }
 
+.canvas-hd-right {
+  display:     flex;
+  align-items: center;
+  gap:         var(--sp-3);
+}
+
+/* ── Live cards button ──────────────────────────────── */
+.live-cards-btn {
+  display:       flex;
+  align-items:   center;
+  gap:           var(--sp-1);
+  padding:       5px var(--sp-3);
+  background:    var(--clr-card);
+  border:        1px solid var(--clr-border);
+  border-radius: var(--radius-full);
+  color:         var(--clr-muted);
+  font-size:     var(--text-sm);
+  font-weight:   var(--weight-medium);
+  white-space:   nowrap;
+  transition:    color var(--ease), border-color var(--ease);
+}
+
+.live-cards-btn:hover {
+  color:        var(--clr-text);
+  border-color: var(--clr-border-lite);
+}
+
 /* ── Message list ───────────────────────────────────── */
 #messages {
   flex:           1;
