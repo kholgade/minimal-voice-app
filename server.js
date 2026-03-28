@@ -12,9 +12,9 @@ const GoogleStrategy = require('passport-google-oauth20').Strategy;
 
 const app = express();
 const server = http.createServer(app);
-const wss = new WebSocketServer({ server });
+const wss = new WebSocketServer({ noServer: true });
 
-// In-memory config — loaded from .env at startup, updated live on POST /api/config
+// ── In-memory config ──────────────────────────────────────────────────────────
 const cfg = {};
 
 function loadConfig() {
@@ -28,7 +28,6 @@ function loadConfig() {
       if (key) cfg[key] = val;
     }
   }
-  // Fill in process.env values for keys not in .env
   for (const [k, v] of Object.entries(process.env)) {
     if (!(k in cfg)) cfg[k] = v;
   }
@@ -43,13 +42,75 @@ const RECORDINGS_DIR = path.join(__dirname, 'recordings');
 if (!fs.existsSync(RECORDINGS_DIR)) fs.mkdirSync(RECORDINGS_DIR, { recursive: true });
 
 const upload = multer({ dest: UPLOAD_DIR });
-const sessions = new Map(); // sessionId -> message history
+const sessions = new Map();
+
+// ── Auth setup ────────────────────────────────────────────────────────────────
+app.set('trust proxy', 1); // Required for Cloud Run (HTTPS behind proxy)
+
+const sessionMiddleware = session({
+  secret: cfg.SESSION_SECRET || 'voice-agent-secret-change-me',
+  resave: false,
+  saveUninitialized: false,
+  cookie: { secure: 'auto', maxAge: 7 * 24 * 60 * 60 * 1000 }, // 7 days
+});
+
+app.use(sessionMiddleware);
+app.use(passport.initialize());
+app.use(passport.session());
+
+passport.use(new GoogleStrategy(
+  {
+    clientID: cfg.GOOGLE_CLIENT_ID || '',
+    clientSecret: cfg.GOOGLE_CLIENT_SECRET || '',
+    callbackURL: cfg.GOOGLE_CALLBACK_URL || '/auth/google/callback',
+  },
+  (accessToken, refreshToken, profile, done) => {
+    const email = profile.emails?.[0]?.value || '';
+    const allowed = (cfg.ALLOWED_EMAILS || '').split(',').map(e => e.trim()).filter(Boolean);
+    if (allowed.includes(email)) {
+      return done(null, { email, name: profile.displayName, photo: profile.photos?.[0]?.value });
+    }
+    return done(null, false);
+  }
+));
+
+passport.serializeUser((user, done) => done(null, user));
+passport.deserializeUser((user, done) => done(null, user));
 
 app.use(express.json());
+
+// ── Auth routes (public) ──────────────────────────────────────────────────────
+app.get('/auth/google',
+  passport.authenticate('google', { scope: ['email', 'profile'] })
+);
+
+app.get('/auth/google/callback',
+  passport.authenticate('google', { failureRedirect: '/login.html?error=denied' }),
+  (req, res) => res.redirect('/')
+);
+
+app.post('/auth/logout', (req, res) => {
+  req.logout(() => res.redirect('/login.html'));
+});
+
+// Serve login page without auth
+app.get('/login.html', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'login.html'));
+});
+
+// ── Auth guard ────────────────────────────────────────────────────────────────
+function requireAuth(req, res, next) {
+  if (req.isAuthenticated()) return next();
+  if (req.path.startsWith('/api/')) return res.status(401).json({ error: 'Unauthorized' });
+  res.redirect('/login.html');
+}
+
+app.use(requireAuth);
+
+// ── Static files (protected) ──────────────────────────────────────────────────
 app.use(express.static('public'));
 
-// --- Config API ---
-
+// ── Config API ────────────────────────────────────────────────────────────────
 app.get('/api/config', (req, res) => {
   res.json(cfg);
 });
@@ -58,13 +119,15 @@ app.post('/api/config', (req, res) => {
   const envFile = path.join(__dirname, '.env');
   const lines = Object.entries(req.body).map(([k, v]) => `${k}=${v}`).join('\n');
   fs.writeFileSync(envFile, lines + '\n');
-  // Apply changes to in-memory config immediately — no restart needed
   for (const [k, v] of Object.entries(req.body)) cfg[k] = v;
   res.json({ ok: true, message: 'Saved and applied.' });
 });
 
-// --- STT: audio upload -> transcript ---
+app.get('/api/me', (req, res) => {
+  res.json({ email: req.user.email, name: req.user.name, photo: req.user.photo });
+});
 
+// ── STT: audio upload -> transcript ──────────────────────────────────────────
 app.post('/api/transcribe', upload.single('audio'), async (req, res) => {
   if (!req.file) return res.status(400).json({ error: 'No audio file' });
   try {
@@ -80,8 +143,7 @@ app.post('/api/transcribe', upload.single('audio'), async (req, res) => {
   }
 });
 
-// --- Recording API ---
-
+// ── Recording API ─────────────────────────────────────────────────────────────
 function fmtTime(sec) {
   const m = Math.floor(sec / 60), s = Math.floor(sec % 60);
   return `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
@@ -166,7 +228,7 @@ app.post('/api/recording/stop', (req, res) => {
 
 app.get('/api/recording/sessions', (req, res) => {
   if (!fs.existsSync(RECORDINGS_DIR)) return res.json({ sessions: [] });
-  const sessions = fs.readdirSync(RECORDINGS_DIR)
+  const list = fs.readdirSync(RECORDINGS_DIR)
     .filter(d => fs.statSync(path.join(RECORDINGS_DIR, d)).isDirectory())
     .map(d => {
       const mp = path.join(RECORDINGS_DIR, d, 'meta.json');
@@ -174,7 +236,7 @@ app.get('/api/recording/sessions', (req, res) => {
     })
     .filter(Boolean)
     .sort((a, b) => new Date(b.startTime) - new Date(a.startTime));
-  res.json({ sessions });
+  res.json({ sessions: list });
 });
 
 app.get('/api/recording/:id', (req, res) => {
@@ -186,7 +248,23 @@ app.get('/api/recording/:id', (req, res) => {
   res.json({ ...meta, transcript });
 });
 
-// --- WebSocket: text input -> LLM -> TTS ---
+// ── WebSocket: protected upgrade, then text -> LLM -> TTS ────────────────────
+server.on('upgrade', (req, socket, head) => {
+  sessionMiddleware(req, {}, () => {
+    passport.initialize()(req, {}, () => {
+      passport.session()(req, {}, () => {
+        if (!req.isAuthenticated()) {
+          socket.write('HTTP/1.1 401 Unauthorized\r\n\r\n');
+          socket.destroy();
+          return;
+        }
+        wss.handleUpgrade(req, socket, head, (ws) => {
+          wss.emit('connection', ws, req);
+        });
+      });
+    });
+  });
+});
 
 wss.on('connection', (ws) => {
   const sessionId = Date.now().toString() + Math.random().toString(36).slice(2);
@@ -218,7 +296,7 @@ async function handleInput(ws, sessionId, userText) {
 
   const messages = [
     { role: 'system', content: 'You are a helpful voice assistant. Be concise.' },
-    ...history, // already trimmed to last 10 turns
+    ...history,
     { role: 'user', content: userText },
   ];
 
@@ -233,7 +311,6 @@ async function handleInput(ws, sessionId, userText) {
       sentenceBuffer += chunk;
       ws.send(JSON.stringify({ type: 'llm_chunk', text: chunk }));
 
-      // Flush complete sentences to TTS
       const match = sentenceBuffer.match(/^([\s\S]*[.!?])\s*/);
       if (match) {
         const sentence = match[1].trim();
@@ -242,10 +319,8 @@ async function handleInput(ws, sessionId, userText) {
       }
     }
 
-    // Flush remainder
     if (sentenceBuffer.trim()) await sendTTS(ws, sentenceBuffer.trim());
 
-    // Update history, keep last 10 turns (20 messages)
     history.push({ role: 'user', content: userText });
     history.push({ role: 'assistant', content: fullResponse });
     while (history.length > 20) history.shift();
@@ -291,15 +366,7 @@ async function* streamLLM(messages) {
     const userMessages = messages.filter(m => m.role !== 'system');
     const resp = await axios.post(
       `${cfg.ANTHROPIC_BASE_URL || 'https://api.anthropic.com'}/v1/messages`,
-      {
-        model,
-        max_tokens: maxTokens,
-        system: systemMsg,
-        messages: userMessages,
-        stream: true,
-        temperature,
-        top_p: topP,
-      },
+      { model, max_tokens: maxTokens, system: systemMsg, messages: userMessages, stream: true, temperature, top_p: topP },
       {
         headers: {
           'x-api-key': cfg.ANTHROPIC_API_KEY || '',
@@ -328,10 +395,7 @@ async function* streamLLM(messages) {
     const contents = messages
       .filter(m => m.role !== 'system')
       .map(m => ({ role: m.role === 'assistant' ? 'model' : 'user', parts: [{ text: m.content }] }));
-    const body = {
-      contents,
-      generationConfig: { temperature, topP, maxOutputTokens: maxTokens },
-    };
+    const body = { contents, generationConfig: { temperature, topP, maxOutputTokens: maxTokens } };
     if (systemMsg) body.system_instruction = { parts: [{ text: systemMsg }] };
     const resp = await axios.post(
       `${cfg.GOOGLE_BASE_URL || 'https://generativelanguage.googleapis.com'}/v1beta/models/${model}:streamGenerateContent?alt=sse&key=${cfg.GOOGLE_API_KEY || ''}`,
@@ -354,7 +418,6 @@ async function* streamLLM(messages) {
     }
 
   } else {
-    // OpenAI-compatible (default)
     const resp = await axios.post(
       `${cfg.OPENAI_BASE_URL || 'https://api.openai.com/v1'}/chat/completions`,
       { model, messages, stream: true, temperature, top_p: topP, max_tokens: maxTokens },
