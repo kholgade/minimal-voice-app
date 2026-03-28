@@ -29,6 +29,29 @@ def transcribe():
     text = ' '.join(s.text for s in segments).strip()
     return jsonify({'text': text, 'language': info.language})
 
+@app.route('/transcribe-meeting', methods=['POST'])
+def transcribe_meeting():
+    data = request.get_json()
+    audio_path = data.get('audio_path', '')
+    chunk_start = float(data.get('chunk_start', 0))
+    if not audio_path or not os.path.exists(audio_path):
+        return jsonify({'error': 'Audio file not found'}), 400
+    segments_iter, info = get_model().transcribe(
+        audio_path,
+        vad_filter=True,
+        word_timestamps=False,
+    )
+    segments = []
+    for seg in segments_iter:
+        text = seg.text.strip()
+        if text:
+            segments.append({
+                'start': round(chunk_start + seg.start, 2),
+                'end':   round(chunk_start + seg.end,   2),
+                'text':  text,
+            })
+    return jsonify({'segments': segments, 'language': info.language})
+
 if __name__ == '__main__':
     port = int(os.getenv('STT_PORT', 3001))
     print(f'STT service on port {port}')

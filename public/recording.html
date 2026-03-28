@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>New Recording — Voice Agent</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="css/recording.css">
+</head>
+<body>
+<div id="app">
+
+  <header id="topbar">
+    <div class="brand">
+      <div class="brand-icon">V</div>
+      <span class="brand-name">Voice Agent</span>
+    </div>
+    <div class="search-wrap"></div>
+    <div class="topbar-right">
+      <a href="/" class="icon-btn" title="Back to Chat">←</a>
+    </div>
+  </header>
+
+  <div id="rec-layout">
+
+    <!-- ── Left: controls + live transcript ── -->
+    <main id="rec-main">
+
+      <div id="rec-header">
+        <h1 class="rec-title">New Recording</h1>
+        <div id="rec-timer" class="rec-timer">00:00</div>
+      </div>
+
+      <!-- Record button -->
+      <div id="rec-btn-wrap">
+        <button id="rec-btn" onclick="toggleRecording()">
+          <span class="rec-ripple"></span>
+          <span class="rec-ripple"></span>
+          <svg id="rec-icon" width="32" height="32" viewBox="0 0 24 24" fill="currentColor">
+            <circle cx="12" cy="12" r="8"/>
+          </svg>
+          <svg id="stop-icon" class="hidden" width="28" height="28" viewBox="0 0 24 24" fill="currentColor">
+            <rect x="5" y="5" width="14" height="14" rx="2"/>
+          </svg>
+        </button>
+        <p id="rec-hint" class="rec-hint">Click to start recording</p>
+      </div>
+
+      <!-- Live transcript -->
+      <div id="live-transcript-wrap" class="hidden">
+        <div class="rec-section-title">
+          <span>Live Transcript</span>
+          <span id="chunk-badge" class="chunk-badge">chunk 0</span>
+        </div>
+        <div id="live-transcript"></div>
+      </div>
+
+      <!-- Full transcript (shown after stop) -->
+      <div id="full-transcript-wrap" class="hidden">
+        <div class="rec-section-title">
+          <span>Full Transcript</span>
+          <div class="transcript-actions">
+            <button class="tr-btn" onclick="copyTranscript()">Copy</button>
+            <button class="tr-btn" onclick="downloadTranscript()">Download</button>
+          </div>
+        </div>
+        <div id="full-transcript"></div>
+      </div>
+
+    </main>
+
+    <!-- ── Right: past sessions ── -->
+    <aside id="rec-sidebar">
+      <div class="panel-hd">
+        <span>Past Recordings</span>
+      </div>
+      <div id="session-list-rec"></div>
+    </aside>
+
+  </div>
+
+</div>
+<script src="recording.js"></script>
+</body>
+</html>

@@ -1,0 +1,249 @@
+/* ══════════════════════════════════════════════════════
+   RECORDING PAGE
+   ══════════════════════════════════════════════════════ */
+
+/* ── Layout ─────────────────────────────────────────── */
+#rec-layout {
+  display:               grid;
+  grid-template-columns: 1fr 280px;
+  height:                calc(100dvh - var(--topbar-h));
+  overflow:              hidden;
+}
+
+#rec-main {
+  display:        flex;
+  flex-direction: column;
+  align-items:    center;
+  padding:        var(--sp-8) var(--sp-5);
+  overflow-y:     auto;
+  gap:            var(--sp-6);
+  background:     var(--clr-bg);
+}
+
+/* ── Header ─────────────────────────────────────────── */
+#rec-header {
+  display:        flex;
+  flex-direction: column;
+  align-items:    center;
+  gap:            var(--sp-2);
+  width:          100%;
+}
+
+.rec-title {
+  font-size:   22px;
+  font-weight: var(--weight-semibold);
+  color:       var(--clr-text);
+}
+
+.rec-timer {
+  font-size:   var(--text-lg);
+  font-weight: var(--weight-medium);
+  color:       var(--clr-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ── Record button ──────────────────────────────────── */
+#rec-btn-wrap {
+  display:        flex;
+  flex-direction: column;
+  align-items:    center;
+  gap:            var(--sp-3);
+}
+
+#rec-btn {
+  width:         80px;
+  height:        80px;
+  border-radius: var(--radius-full);
+  background:    var(--clr-red);
+  border:        none;
+  display:       grid;
+  place-items:   center;
+  color:         #fff;
+  position:      relative;
+  overflow:      visible;
+  cursor:        pointer;
+  transition:    transform var(--ease), box-shadow var(--ease);
+}
+
+#rec-btn:hover {
+  transform:  scale(1.07);
+  box-shadow: 0 0 0 8px rgba(239, 68, 68, 0.15);
+}
+
+#rec-btn.active { background: #b91c1c; }
+
+/* Ripple */
+.rec-ripple {
+  position:       absolute;
+  inset:          0;
+  border-radius:  var(--radius-full);
+  background:     rgba(239, 68, 68, 0.4);
+  opacity:        0;
+  display:        none;
+  pointer-events: none;
+}
+
+#rec-btn.active .rec-ripple {
+  display:   block;
+  animation: rec-pulse 1.8s ease-out infinite;
+}
+
+#rec-btn.active .rec-ripple:nth-child(2) { animation-delay: 0.9s; }
+
+@keyframes rec-pulse {
+  0%   { transform: scale(1);   opacity: 0.5; }
+  100% { transform: scale(2.4); opacity: 0;   }
+}
+
+.rec-hint {
+  font-size: var(--text-sm);
+  color:     var(--clr-muted);
+}
+
+/* ── Transcript sections ─────────────────────────────── */
+#live-transcript-wrap,
+#full-transcript-wrap {
+  width:      100%;
+  max-width:  720px;
+}
+
+.rec-section-title {
+  display:         flex;
+  align-items:     center;
+  justify-content: space-between;
+  font-size:       var(--text-md);
+  font-weight:     var(--weight-semibold);
+  color:           var(--clr-text);
+  margin-bottom:   var(--sp-3);
+}
+
+.chunk-badge {
+  font-size:     var(--text-xs);
+  color:         var(--clr-muted);
+  background:    var(--clr-card);
+  border:        1px solid var(--clr-border);
+  border-radius: var(--radius-full);
+  padding:       2px var(--sp-2);
+}
+
+#live-transcript,
+#full-transcript {
+  display:        flex;
+  flex-direction: column;
+  gap:            var(--sp-2);
+  max-height:     420px;
+  overflow-y:     auto;
+  background:     var(--clr-surface);
+  border:         1px solid var(--clr-border);
+  border-radius:  var(--radius-lg);
+  padding:        var(--sp-4);
+}
+
+.tr-segment {
+  display:     flex;
+  gap:         var(--sp-3);
+  align-items: flex-start;
+  font-size:   var(--text-base);
+  line-height: var(--leading-base);
+}
+
+.tr-ts {
+  font-size:       var(--text-xs);
+  color:           var(--clr-accent);
+  font-variant-numeric: tabular-nums;
+  white-space:     nowrap;
+  flex-shrink:     0;
+  margin-top:      2px;
+  font-weight:     var(--weight-medium);
+}
+
+.tr-text { color: var(--clr-text); }
+
+/* ── Transcript action buttons ──────────────────────── */
+.transcript-actions {
+  display: flex;
+  gap:     var(--sp-2);
+}
+
+.tr-btn {
+  padding:       4px var(--sp-3);
+  background:    var(--clr-card);
+  border:        1px solid var(--clr-border);
+  border-radius: var(--radius-md);
+  color:         var(--clr-muted);
+  font-size:     var(--text-sm);
+  transition:    color var(--ease), border-color var(--ease);
+}
+
+.tr-btn:hover {
+  color:        var(--clr-text);
+  border-color: var(--clr-border-lite);
+}
+
+/* ── Right sidebar ───────────────────────────────────── */
+#rec-sidebar {
+  display:        flex;
+  flex-direction: column;
+  background:     var(--clr-surface);
+  border-left:    1px solid var(--clr-border);
+  overflow:       hidden;
+}
+
+#session-list-rec {
+  flex:       1;
+  overflow-y: auto;
+  padding:    0 var(--sp-3) var(--sp-3);
+  display:    flex;
+  flex-direction: column;
+  gap:        var(--sp-2);
+}
+
+.rec-empty {
+  color:     var(--clr-muted);
+  font-size: var(--text-sm);
+  padding:   var(--sp-4);
+  text-align: center;
+}
+
+.rec-session-card {
+  background:    var(--clr-card);
+  border:        1px solid var(--clr-border);
+  border-radius: var(--radius-lg);
+  padding:       var(--sp-3);
+  cursor:        pointer;
+  transition:    background var(--ease), border-color var(--ease);
+}
+
+.rec-session-card:hover {
+  background:   var(--clr-card-hover);
+  border-color: var(--clr-border-lite);
+}
+
+.rsc-date {
+  font-size:   var(--text-sm);
+  font-weight: var(--weight-medium);
+  color:       var(--clr-text);
+  margin-bottom: var(--sp-1);
+}
+
+.rsc-status {
+  font-size:     var(--text-xs);
+  border-radius: var(--radius-full);
+  display:       inline-block;
+  padding:       1px var(--sp-2);
+  margin-bottom: var(--sp-1);
+}
+
+.rsc-status.complete     { background: rgba(34,197,94,.15); color: var(--clr-green); }
+.rsc-status.recording    { background: rgba(239,68,68,.15);  color: var(--clr-red);   }
+
+.rsc-chunks {
+  font-size: var(--text-xs);
+  color:     var(--clr-muted);
+}
+
+/* ── Responsive ─────────────────────────────────────── */
+@media (max-width: 640px) {
+  #rec-layout { grid-template-columns: 1fr; }
+  #rec-sidebar { display: none; }
+}
