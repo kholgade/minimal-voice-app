@@ -4,6 +4,7 @@ A local voice assistant with meeting recording and transcription.
 
 ---
 
+
 ## Conversation
 
 Talk or type with an AI assistant. Supports voice input and spoken responses.

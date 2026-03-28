@@ -1,0 +1,12 @@
+services:
+  voice-agent:
+    build:
+      context: .
+      args:
+        WHISPER_MODEL: medium        # small | medium | large-v3
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./.env:/app/.env             # API keys and settings
+      - ./recordings:/app/recordings # persist recordings across restarts
+    restart: unless-stopped
