@@ -11,7 +11,28 @@ const app = express();
 const server = http.createServer(app);
 const wss = new WebSocketServer({ server });
 
-const PORT = process.env.PORT || 3000;
+// In-memory config — loaded from .env at startup, updated live on POST /api/config
+const cfg = {};
+
+function loadConfig() {
+  const envFile = path.join(__dirname, '.env');
+  if (fs.existsSync(envFile)) {
+    for (const line of fs.readFileSync(envFile, 'utf8').split('\n')) {
+      const eqIdx = line.indexOf('=');
+      if (eqIdx === -1 || line.startsWith('#')) continue;
+      const key = line.slice(0, eqIdx).trim();
+      const val = line.slice(eqIdx + 1).trim();
+      if (key) cfg[key] = val;
+    }
+  }
+  // Fill in process.env values for keys not in .env
+  for (const [k, v] of Object.entries(process.env)) {
+    if (!(k in cfg)) cfg[k] = v;
+  }
+}
+loadConfig();
+
+const PORT = cfg.PORT || process.env.PORT || 3000;
 const UPLOAD_DIR = path.join(require('os').tmpdir(), 'voice-agent');
 if (!fs.existsSync(UPLOAD_DIR)) fs.mkdirSync(UPLOAD_DIR, { recursive: true });
 
@@ -27,25 +48,16 @@ app.use(express.static('public'));
 // --- Config API ---
 
 app.get('/api/config', (req, res) => {
-  const envFile = path.join(__dirname, '.env');
-  const config = {};
-  if (fs.existsSync(envFile)) {
-    for (const line of fs.readFileSync(envFile, 'utf8').split('\n')) {
-      const eqIdx = line.indexOf('=');
-      if (eqIdx === -1 || line.startsWith('#')) continue;
-      const key = line.slice(0, eqIdx).trim();
-      const val = line.slice(eqIdx + 1).trim();
-      if (key) config[key] = val;
-    }
-  }
-  res.json(config);
+  res.json(cfg);
 });
 
 app.post('/api/config', (req, res) => {
   const envFile = path.join(__dirname, '.env');
   const lines = Object.entries(req.body).map(([k, v]) => `${k}=${v}`).join('\n');
   fs.writeFileSync(envFile, lines + '\n');
-  res.json({ ok: true, message: 'Saved. Restart server for changes to take effect.' });
+  // Apply changes to in-memory config immediately — no restart needed
+  for (const [k, v] of Object.entries(req.body)) cfg[k] = v;
+  res.json({ ok: true, message: 'Saved and applied.' });
 });
 
 // --- STT: audio upload -> transcript ---
@@ -54,7 +66,7 @@ app.post('/api/transcribe', upload.single('audio'), async (req, res) => {
   if (!req.file) return res.status(400).json({ error: 'No audio file' });
   try {
     const response = await axios.post(
-      `${process.env.STT_URL || 'http://localhost:3001'}/transcribe`,
+      `${cfg.STT_URL || 'http://localhost:3001'}/transcribe`,
       { audio_path: req.file.path }
     );
     fs.unlink(req.file.path, () => {});
@@ -101,7 +113,7 @@ app.post('/api/recording/chunk', upload.single('audio'), async (req, res) => {
   let segments = [];
   try {
     const r = await axios.post(
-      `${process.env.STT_URL || 'http://localhost:3001'}/transcribe-meeting`,
+      `${cfg.STT_URL || 'http://localhost:3001'}/transcribe-meeting`,
       { audio_path: audioPath, chunk_start: start }
     );
     segments = r.data.segments || [];
@@ -245,15 +257,15 @@ async function handleInput(ws, sessionId, userText) {
 }
 
 async function* streamLLM(messages) {
-  const provider = process.env.LLM_PROVIDER || 'openai';
-  const model = process.env.LLM_MODEL || 'gpt-4o';
-  const temperature = parseFloat(process.env.TEMPERATURE || '0.7');
-  const topP = parseFloat(process.env.TOP_P || '0.9');
-  const maxTokens = parseInt(process.env.MAX_TOKENS || '1024');
+  const provider = cfg.LLM_PROVIDER || 'openai';
+  const model = cfg.LLM_MODEL || 'gpt-4o';
+  const temperature = parseFloat(cfg.TEMPERATURE || '0.7');
+  const topP = parseFloat(cfg.TOP_P || '0.9');
+  const maxTokens = parseInt(cfg.MAX_TOKENS || '1024');
 
   if (provider === 'ollama') {
     const resp = await axios.post(
-      `${process.env.OLLAMA_URL || 'http://localhost:11434'}/api/chat`,
+      `${cfg.OLLAMA_URL || 'http://localhost:11434'}/api/chat`,
       { model, messages, stream: true, options: { temperature, top_p: topP } },
       { responseType: 'stream' }
     );
@@ -275,7 +287,7 @@ async function* streamLLM(messages) {
     const systemMsg = messages.find(m => m.role === 'system')?.content || '';
     const userMessages = messages.filter(m => m.role !== 'system');
     const resp = await axios.post(
-      `${process.env.ANTHROPIC_BASE_URL || 'https://api.anthropic.com'}/v1/messages`,
+      `${cfg.ANTHROPIC_BASE_URL || 'https://api.anthropic.com'}/v1/messages`,
       {
         model,
         max_tokens: maxTokens,
@@ -287,7 +299,7 @@ async function* streamLLM(messages) {
       },
       {
         headers: {
-          'x-api-key': process.env.ANTHROPIC_API_KEY || '',
+          'x-api-key': cfg.ANTHROPIC_API_KEY || '',
           'anthropic-version': '2023-06-01',
           'content-type': 'application/json',
         },
@@ -319,7 +331,7 @@ async function* streamLLM(messages) {
     };
     if (systemMsg) body.system_instruction = { parts: [{ text: systemMsg }] };
     const resp = await axios.post(
-      `${process.env.GOOGLE_BASE_URL || 'https://generativelanguage.googleapis.com'}/v1beta/models/${model}:streamGenerateContent?alt=sse&key=${process.env.GOOGLE_API_KEY || ''}`,
+      `${cfg.GOOGLE_BASE_URL || 'https://generativelanguage.googleapis.com'}/v1beta/models/${model}:streamGenerateContent?alt=sse&key=${cfg.GOOGLE_API_KEY || ''}`,
       body,
       { responseType: 'stream' }
     );
@@ -341,10 +353,10 @@ async function* streamLLM(messages) {
   } else {
     // OpenAI-compatible (default)
     const resp = await axios.post(
-      `${process.env.OPENAI_BASE_URL || 'https://api.openai.com/v1'}/chat/completions`,
+      `${cfg.OPENAI_BASE_URL || 'https://api.openai.com/v1'}/chat/completions`,
       { model, messages, stream: true, temperature, top_p: topP, max_tokens: maxTokens },
       {
-        headers: { Authorization: `Bearer ${process.env.OPENAI_API_KEY || ''}` },
+        headers: { Authorization: `Bearer ${cfg.OPENAI_API_KEY || ''}` },
         responseType: 'stream',
       }
     );
@@ -368,8 +380,8 @@ async function* streamLLM(messages) {
 async function sendTTS(ws, text) {
   try {
     const resp = await axios.post(
-      `${process.env.TTS_URL || 'http://localhost:3002'}/synthesize`,
-      { text, voice: process.env.TTS_VOICE || 'af_bella' },
+      `${cfg.TTS_URL || 'http://localhost:3002'}/synthesize`,
+      { text, voice: cfg.TTS_VOICE || 'af_bella' },
       { responseType: 'arraybuffer' }
     );
     const audio = Buffer.from(resp.data).toString('base64');
