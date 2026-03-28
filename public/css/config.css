@@ -50,6 +50,12 @@ body.config-page #app {
   color:     var(--clr-muted);
 }
 
+.field-note {
+  font-size:  var(--text-xs);
+  color:      var(--clr-muted);
+  margin-top: 2px;
+}
+
 /* ── Provider sub-group (stacked fields) ────────────── */
 .field-group {
   display:        flex;
