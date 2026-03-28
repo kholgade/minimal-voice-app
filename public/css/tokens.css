@@ -1,0 +1,78 @@
+/* ══════════════════════════════════════════════════════
+   DESIGN TOKENS — single source of truth
+   ══════════════════════════════════════════════════════ */
+:root {
+
+  /* ── Colour palette ─────────────────────────────── */
+  --clr-bg:           #080d16;
+  --clr-surface:      #0d1521;
+  --clr-card:         #101d2f;
+  --clr-card-hover:   #132238;
+  --clr-border:       #1b2d45;
+  --clr-border-lite:  #243447;
+
+  --clr-text:         #dce8f5;
+  --clr-muted:        #4e6a88;
+
+  --clr-accent:       #3b82f6;
+  --clr-accent-dim:   rgba(59, 130, 246, 0.15);
+  --clr-accent-hover: #2563eb;
+
+  --clr-green:        #22c55e;
+  --clr-purple:       #a855f7;
+  --clr-red:          #ef4444;
+
+  --clr-user-bubble:  #1a3260;
+  --clr-user-border:  #244080;
+
+  /* ── Typography ─────────────────────────────────── */
+  --font-sans:   system-ui, -apple-system, sans-serif;
+  --font-mono:   ui-monospace, "Cascadia Code", "Fira Code", monospace;
+
+  --text-xs:   11px;
+  --text-sm:   12px;
+  --text-base: 13.5px;
+  --text-md:   14px;
+  --text-lg:   15px;
+
+  --weight-normal:   400;
+  --weight-medium:   500;
+  --weight-semibold: 600;
+  --weight-bold:     700;
+
+  --leading-tight:  1.4;
+  --leading-base:   1.6;
+  --tracking-wide:  0.06em;
+  --tracking-wider: 0.08em;
+
+  /* ── Spacing scale ──────────────────────────────── */
+  --sp-1:  4px;
+  --sp-2:  8px;
+  --sp-3:  12px;
+  --sp-4:  16px;
+  --sp-5:  20px;
+  --sp-6:  24px;
+  --sp-8:  32px;
+  --sp-10: 40px;
+
+  /* ── Border radius ──────────────────────────────── */
+  --radius-sm:   6px;
+  --radius-md:   8px;
+  --radius-lg:   12px;
+  --radius-full: 9999px;
+
+  /* ── Layout dimensions ──────────────────────────── */
+  --rail-w:       48px;
+  --sidebar-w:    300px;
+  --inspector-w:  290px;
+  --topbar-h:     56px;
+  --mobtab-h:     52px;
+
+  /* ── Transitions ────────────────────────────────── */
+  --ease:      0.15s ease;
+  --ease-slow: 0.25s ease;
+
+  /* ── Shadows ────────────────────────────────────── */
+  --shadow-panel: -4px 0 24px rgba(0, 0, 0, 0.5);
+  --shadow-panel-right: 4px 0 24px rgba(0, 0, 0, 0.5);
+}

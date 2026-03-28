@@ -1,0 +1,88 @@
+/* ══════════════════════════════════════════════════════
+   RESPONSIVE BREAKPOINTS
+   ══════════════════════════════════════════════════════ */
+
+/* ── Tablet ≤ 1100px: hide inspector, keep sidebar ──── */
+@media (max-width: 1100px) {
+  #layout {
+    grid-template-columns: var(--rail-w) var(--sidebar-w) 1fr 0;
+  }
+
+  #inspector {
+    display: none;
+  }
+
+  #inspector.open {
+    display:    flex;
+    position:   fixed;
+    right:      0;
+    top:        var(--topbar-h);
+    bottom:     0;
+    width:      var(--inspector-w);
+    z-index:    30;
+    box-shadow: var(--shadow-panel);
+  }
+}
+
+/* ── Small tablet ≤ 800px: collapse sidebar ─────────── */
+@media (max-width: 800px) {
+  #layout {
+    grid-template-columns: var(--rail-w) 0 1fr 0;
+  }
+
+  #sidebar {
+    display: none;
+  }
+
+  #sidebar.open {
+    display:    flex;
+    position:   fixed;
+    left:       var(--rail-w);
+    top:        var(--topbar-h);
+    bottom:     0;
+    width:      var(--sidebar-w);
+    z-index:    30;
+    box-shadow: var(--shadow-panel-right);
+  }
+}
+
+/* ── Mobile ≤ 600px: single column + bottom tab bar ─── */
+@media (max-width: 600px) {
+  #app {
+    grid-template-rows: var(--topbar-h) 1fr var(--mobtab-h);
+  }
+
+  #layout {
+    grid-template-columns: 1fr;
+  }
+
+  #rail    { display: none; }
+  #sidebar { display: none; }
+
+  #mobile-tabs { display: grid; }
+
+  .brand-name  { display: none; }
+  .search-wrap { max-width: 100%; }
+
+  .bubble { max-width: 88%; }
+
+  #sidebar.open {
+    display:    flex;
+    position:   fixed;
+    left:       0;
+    top:        var(--topbar-h);
+    bottom:     var(--mobtab-h);
+    width:      100%;
+    z-index:    30;
+  }
+
+  #inspector.open {
+    display:    flex;
+    position:   fixed;
+    left:       0;
+    top:        var(--topbar-h);
+    bottom:     var(--mobtab-h);
+    width:      100%;
+    z-index:    30;
+  }
+}

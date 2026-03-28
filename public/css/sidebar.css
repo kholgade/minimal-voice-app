@@ -1,0 +1,88 @@
+/* ══════════════════════════════════════════════════════
+   SIDEBAR — session history
+   ══════════════════════════════════════════════════════ */
+
+#sidebar {
+  display:        flex;
+  flex-direction: column;
+  background:     var(--clr-surface);
+  border-right:   1px solid var(--clr-border);
+  overflow:       hidden;
+}
+
+/* ── Session list ───────────────────────────────────── */
+#session-list {
+  flex:           1;
+  overflow-y:     auto;
+  padding:        0 var(--sp-3) var(--sp-3);
+  display:        flex;
+  flex-direction: column;
+  gap:            var(--sp-2);
+}
+
+/* ── Session card ───────────────────────────────────── */
+.session-card {
+  background:    var(--clr-card);
+  border:        1px solid var(--clr-border);
+  border-radius: var(--radius-lg);
+  padding:       var(--sp-3) var(--sp-3) var(--sp-2);
+  cursor:        pointer;
+  transition:    background var(--ease), border-color var(--ease);
+}
+
+.session-card:hover  {
+  background:    var(--clr-card-hover);
+  border-color:  var(--clr-border-lite);
+}
+
+.session-card.active { border-color: var(--clr-accent); }
+
+.sc-top {
+  display:         flex;
+  justify-content: space-between;
+  align-items:     baseline;
+  margin-bottom:   var(--sp-2);
+}
+
+.sc-title {
+  font-size:   var(--text-md);
+  font-weight: var(--weight-medium);
+}
+
+.sc-age {
+  font-size: var(--text-xs);
+  color:     var(--clr-muted);
+}
+
+/* ── Sparkline ──────────────────────────────────────── */
+.sparkline {
+  height:        28px;
+  margin-bottom: var(--sp-2);
+}
+
+.sparkline svg {
+  width:  100%;
+  height: 100%;
+}
+
+/* ── Card footer ────────────────────────────────────── */
+.sc-foot {
+  display:     flex;
+  gap:         var(--sp-2);
+  align-items: center;
+}
+
+.sc-icon-btn {
+  background:    none;
+  border:        none;
+  color:         var(--clr-muted);
+  font-size:     var(--text-md);
+  padding:       var(--sp-1) var(--sp-1);
+  border-radius: var(--radius-sm);
+  transition:    color var(--ease), background var(--ease);
+}
+
+.sc-icon-btn:hover {
+  color:      var(--clr-text);
+  background: var(--clr-border);
+}

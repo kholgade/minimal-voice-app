@@ -1,0 +1,77 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="780" height="720" font-family="system-ui, -apple-system, sans-serif">
+
+  <!-- App background -->
+  <rect width="780" height="720" fill="#0f0f13"/>
+
+  <!-- Header -->
+  <rect width="780" height="57" fill="#0f0f13"/>
+  <line x1="0" y1="57" x2="780" y2="57" stroke="#23232f" stroke-width="1"/>
+  <text x="24" y="35" fill="#e0e0e8" font-size="16" font-weight="600" letter-spacing="0.3">Configuration</text>
+  <rect x="682" y="16" width="72" height="28" rx="7" fill="none" stroke="#32323e" stroke-width="1"/>
+  <text x="718" y="34" fill="#999" font-size="12" text-anchor="middle">← Back</text>
+
+  <!-- ── SECTION: LLM PROVIDER ── -->
+  <text x="24" y="94" fill="#555" font-size="10" font-weight="600" letter-spacing="1" text-transform="uppercase">LLM PROVIDER</text>
+  <line x1="24" y1="100" x2="480" y2="100" stroke="#23232f" stroke-width="1"/>
+
+  <!-- Provider label + select -->
+  <text x="24" y="124" fill="#aaa" font-size="13">Provider</text>
+  <rect x="24" y="132" width="280" height="34" rx="6" fill="#1c1c28" stroke="#32323e" stroke-width="1"/>
+  <text x="38" y="154" fill="#e0e0e8" font-size="13">Ollama</text>
+  <text x="284" y="154" fill="#555" font-size="12">▾</text>
+
+  <!-- Model label + input -->
+  <text x="24" y="188" fill="#aaa" font-size="13">Model</text>
+  <rect x="24" y="196" width="280" height="34" rx="6" fill="#1c1c28" stroke="#32323e" stroke-width="1"/>
+  <text x="38" y="218" fill="#e0e0e8" font-size="13">mistral</text>
+
+  <!-- Ollama URL -->
+  <text x="24" y="252" fill="#aaa" font-size="13">Ollama URL</text>
+  <rect x="24" y="260" width="440" height="34" rx="6" fill="#1c1c28" stroke="#32323e" stroke-width="1"/>
+  <text x="38" y="282" fill="#e0e0e8" font-size="13">http://localhost:11434</text>
+
+  <!-- ── SECTION: GENERATION ── -->
+  <text x="24" y="322" fill="#555" font-size="10" font-weight="600" letter-spacing="1">GENERATION</text>
+  <line x1="24" y1="328" x2="480" y2="328" stroke="#23232f" stroke-width="1"/>
+
+  <!-- Temperature label + value -->
+  <text x="24" y="352" fill="#aaa" font-size="13">Temperature</text>
+  <text x="410" y="352" fill="#e0e0e8" font-size="13" text-anchor="end">0.7</text>
+  <!-- Slider track -->
+  <rect x="24" y="360" width="440" height="4" rx="2" fill="#32323e"/>
+  <!-- Slider fill (0.7 / 2.0 = 35%) -->
+  <rect x="24" y="360" width="154" height="4" rx="2" fill="#5b4cdb"/>
+  <!-- Slider thumb -->
+  <circle cx="178" cy="362" r="8" fill="#5b4cdb"/>
+
+  <!-- Top P label + value -->
+  <text x="24" y="402" fill="#aaa" font-size="13">Top P</text>
+  <text x="410" y="402" fill="#e0e0e8" font-size="13" text-anchor="end">0.9</text>
+  <!-- Slider track -->
+  <rect x="24" y="410" width="440" height="4" rx="2" fill="#32323e"/>
+  <!-- Slider fill (0.9 / 1.0 = 90%) -->
+  <rect x="24" y="410" width="396" height="4" rx="2" fill="#5b4cdb"/>
+  <!-- Slider thumb -->
+  <circle cx="420" cy="412" r="8" fill="#5b4cdb"/>
+
+  <!-- ── SECTION: VOICE ── -->
+  <text x="24" y="452" fill="#555" font-size="10" font-weight="600" letter-spacing="1">VOICE</text>
+  <line x1="24" y1="458" x2="480" y2="458" stroke="#23232f" stroke-width="1"/>
+
+  <!-- TTS Voice label + select -->
+  <text x="24" y="482" fill="#aaa" font-size="13">TTS Voice</text>
+  <rect x="24" y="490" width="280" height="34" rx="6" fill="#1c1c28" stroke="#32323e" stroke-width="1"/>
+  <text x="38" y="512" fill="#e0e0e8" font-size="13">Bella (Friendly)</text>
+  <text x="284" y="512" fill="#555" font-size="12">▾</text>
+
+  <!-- Save button -->
+  <rect x="24" y="560" width="120" height="38" rx="8" fill="#5b4cdb"/>
+  <text x="84" y="583" fill="#fff" font-size="14" font-weight="500" text-anchor="middle">Save</text>
+
+  <!-- ── OpenAI section (shown dimmed to indicate it exists when toggled) ── -->
+  <!-- Annotation label -->
+  <rect x="340" y="132" width="260" height="80" rx="8" fill="#1a1a28" stroke="#2a2a3e" stroke-width="1" stroke-dasharray="4 3"/>
+  <text x="356" y="152" fill="#444" font-size="11" font-style="italic">OpenAI fields appear here</text>
+  <text x="356" y="170" fill="#444" font-size="11" font-style="italic">when provider is switched</text>
+  <text x="356" y="188" fill="#444" font-size="11" font-style="italic">to "OpenAI / Compatible"</text>
+</svg>

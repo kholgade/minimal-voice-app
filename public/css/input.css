@@ -1,0 +1,134 @@
+/* ══════════════════════════════════════════════════════
+   INPUT ZONE — ghost text, waveform, text field, buttons
+   ══════════════════════════════════════════════════════ */
+
+#input-zone {
+  padding:     var(--sp-3) var(--sp-4) var(--sp-4);
+  border-top:  1px solid var(--clr-border);
+  flex-shrink: 0;
+}
+
+/* ── Ghost text row ─────────────────────────────────── */
+#ghost-row {
+  display:     flex;
+  align-items: center;
+  gap:         var(--sp-2);
+  padding:     var(--sp-2) var(--sp-3) var(--sp-2);
+  font-size:   var(--text-sm);
+}
+
+.ghost-label {
+  background:    var(--clr-card);
+  border:        1px solid var(--clr-border);
+  border-radius: var(--radius-sm);
+  padding:       1px var(--sp-2);
+  font-size:     var(--text-xs);
+  color:         var(--clr-muted);
+  white-space:   nowrap;
+  flex-shrink:   0;
+}
+
+.ghost-text {
+  color:      var(--clr-muted);
+  font-style: italic;
+}
+
+/* ── Input bar ──────────────────────────────────────── */
+#input-bar {
+  display:       flex;
+  align-items:   center;
+  gap:           var(--sp-2);
+  background:    var(--clr-card);
+  border:        1px solid var(--clr-border);
+  border-radius: var(--radius-lg);
+  padding:       var(--sp-2) var(--sp-3);
+  transition:    border-color var(--ease), background var(--ease);
+}
+
+#input-bar:focus-within { border-color: var(--clr-accent); }
+#input-bar.recording    { border-color: var(--clr-accent); background: #0d1d35; }
+#input-bar.disabled     { opacity: .5; pointer-events: none; }
+
+/* ── Waveform ───────────────────────────────────────── */
+#waveform {
+  display:     flex;
+  align-items: center;
+  gap:         3px;
+  padding:     0 var(--sp-2);
+  flex-shrink: 0;
+}
+
+.wbar {
+  display:       block;
+  width:         3px;
+  background:    var(--clr-accent);
+  border-radius: 3px;
+  animation:     wave 0.7s ease-in-out infinite;
+}
+
+.wbar:nth-child(1) { height: 6px;  animation-delay: 0s; }
+.wbar:nth-child(2) { height: 14px; animation-delay: 0.08s; }
+.wbar:nth-child(3) { height: 20px; animation-delay: 0.16s; }
+.wbar:nth-child(4) { height: 24px; animation-delay: 0.24s; }
+.wbar:nth-child(5) { height: 20px; animation-delay: 0.32s; }
+.wbar:nth-child(6) { height: 14px; animation-delay: 0.40s; }
+.wbar:nth-child(7) { height: 10px; animation-delay: 0.48s; }
+.wbar:nth-child(8) { height: 16px; animation-delay: 0.56s; }
+.wbar:nth-child(9) { height: 8px;  animation-delay: 0.64s; }
+
+/* ── Text field ─────────────────────────────────────── */
+.text-input {
+  flex:       1;
+  background: transparent;
+  border:     none;
+  color:      var(--clr-text);
+  font-size:  var(--text-base);
+  padding:    2px 0;
+}
+
+.text-input::placeholder { color: var(--clr-muted); }
+.text-input:focus        { outline: none; }
+.text-input:disabled     { opacity: .5; }
+
+/* ── Send button ────────────────────────────────────── */
+.send-btn {
+  padding:       var(--sp-2) var(--sp-4);
+  background:    var(--clr-surface);
+  border:        1px solid var(--clr-border-lite);
+  border-radius: var(--radius-md);
+  color:         var(--clr-text);
+  font-size:     var(--text-md);
+  font-weight:   var(--weight-medium);
+  white-space:   nowrap;
+  transition:    background var(--ease);
+}
+
+.send-btn:hover    { background: var(--clr-card-hover); }
+.send-btn:disabled { opacity: .4; cursor: not-allowed; }
+
+/* ── Mic button ─────────────────────────────────────── */
+.mic-btn {
+  width:         34px;
+  height:        34px;
+  display:       grid;
+  place-items:   center;
+  background:    var(--clr-surface);
+  border:        1px solid var(--clr-border-lite);
+  border-radius: var(--radius-md);
+  color:         var(--clr-muted);
+  flex-shrink:   0;
+  transition:    background var(--ease), color var(--ease), border-color var(--ease);
+}
+
+.mic-btn:hover {
+  color:        var(--clr-text);
+  border-color: var(--clr-accent);
+}
+
+.mic-btn.active {
+  background:   var(--clr-accent);
+  border-color: var(--clr-accent);
+  color:        #fff;
+}
+
+.mic-btn:disabled { opacity: .4; cursor: not-allowed; }

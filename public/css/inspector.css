@@ -1,0 +1,92 @@
+/* ══════════════════════════════════════════════════════
+   INSPECTOR PANEL — summaries, action items
+   ══════════════════════════════════════════════════════ */
+
+#inspector {
+  display:        flex;
+  flex-direction: column;
+  background:     var(--clr-surface);
+  border-left:    1px solid var(--clr-border);
+  overflow:       hidden;
+}
+
+.inspector-desc {
+  padding:       0 var(--sp-4) var(--sp-4);
+  font-size:     var(--text-sm);
+  color:         var(--clr-muted);
+  line-height:   var(--leading-base);
+  border-bottom: 1px solid var(--clr-border);
+  flex-shrink:   0;
+}
+
+/* ── Inspector section ──────────────────────────────── */
+.insp-section        { border-bottom: 1px solid var(--clr-border); }
+
+.insp-section-hd {
+  display:         flex;
+  align-items:     center;
+  justify-content: space-between;
+  padding:         var(--sp-3) var(--sp-4);
+  font-weight:     var(--weight-semibold);
+  font-size:       var(--text-md);
+}
+
+.insp-section-body { padding: 0 var(--sp-4) var(--sp-4); }
+
+.insp-sub {
+  padding:   0 var(--sp-4) var(--sp-2);
+  font-size: var(--text-xs);
+  color:     var(--clr-muted);
+}
+
+/* ── Key summaries ──────────────────────────────────── */
+.summary-title {
+  font-size:     var(--text-sm);
+  font-weight:   var(--weight-semibold);
+  margin-bottom: var(--sp-2);
+}
+
+#summary-list {
+  display:        flex;
+  flex-direction: column;
+  gap:            var(--sp-1);
+  padding-left:   var(--sp-4);
+  list-style:     disc;
+}
+
+#summary-list li {
+  font-size:   var(--text-sm);
+  color:       var(--clr-text);
+  line-height: var(--leading-base);
+}
+
+#summary-list li.empty-state {
+  list-style:  none;
+  margin-left: calc(-1 * var(--sp-4));
+  color:       var(--clr-muted);
+}
+
+/* ── Action items ───────────────────────────────────── */
+.action-item {
+  display:     flex;
+  align-items: center;
+  gap:         var(--sp-2);
+  padding:     var(--sp-2) var(--sp-4);
+  font-size:   var(--text-sm);
+  cursor:      pointer;
+  transition:  background var(--ease);
+}
+
+.action-item:hover { background: var(--clr-card); }
+
+.action-item input[type="checkbox"] {
+  accent-color: var(--clr-accent);
+  flex-shrink:  0;
+}
+
+.action-item.empty-state {
+  color:  var(--clr-muted);
+  cursor: default;
+}
+
+.action-item.empty-state:hover { background: transparent; }

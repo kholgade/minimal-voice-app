@@ -1,0 +1,93 @@
+/* ══════════════════════════════════════════════════════
+   APP SHELL & LAYOUT GRID
+   ══════════════════════════════════════════════════════ */
+
+/* ── App root ───────────────────────────────────────── */
+#app {
+  display:               grid;
+  grid-template-rows:    var(--topbar-h) 1fr;
+  height:                100dvh;
+}
+
+/* ── Top bar ────────────────────────────────────────── */
+#topbar {
+  display:               grid;
+  grid-template-columns: auto 1fr auto;
+  align-items:           center;
+  gap:                   var(--sp-4);
+  padding:               0 var(--sp-4);
+  background:            var(--clr-surface);
+  border-bottom:         1px solid var(--clr-border);
+  z-index:               20;
+}
+
+.topbar-right {
+  display:     flex;
+  align-items: center;
+  gap:         var(--sp-2);
+  flex-shrink: 0;
+}
+
+/* ── Body layout ────────────────────────────────────── */
+#layout {
+  display:               grid;
+  grid-template-columns: var(--rail-w) var(--sidebar-w) 1fr var(--inspector-w);
+  overflow:              hidden;
+  height:                100%;
+}
+
+/* ── Icon rail ──────────────────────────────────────── */
+#rail {
+  display:        flex;
+  flex-direction: column;
+  align-items:    center;
+  gap:            var(--sp-1);
+  padding:        var(--sp-3) 0;
+  background:     var(--clr-surface);
+  border-right:   1px solid var(--clr-border);
+}
+
+.rail-btn {
+  width:         36px;
+  height:        36px;
+  display:       grid;
+  place-items:   center;
+  background:    transparent;
+  border:        none;
+  border-radius: var(--radius-md);
+  color:         var(--clr-muted);
+  font-size:     var(--text-lg);
+  transition:    background var(--ease), color var(--ease);
+}
+
+.rail-btn:hover {
+  background: var(--clr-card);
+  color:      var(--clr-text);
+}
+
+.rail-btn.active {
+  background: var(--clr-accent-dim);
+  color:      var(--clr-accent);
+}
+
+.rail-gap { flex: 1; }
+
+/* ── Mobile tab bar ─────────────────────────────────── */
+#mobile-tabs {
+  display:               none;
+  grid-template-columns: repeat(3, 1fr);
+  background:            var(--clr-surface);
+  border-top:            1px solid var(--clr-border);
+  height:                var(--mobtab-h);
+}
+
+.tab-btn {
+  background:  none;
+  border:      none;
+  color:       var(--clr-muted);
+  font-size:   var(--text-md);
+  font-weight: var(--weight-medium);
+  transition:  color var(--ease);
+}
+
+.tab-btn.active { color: var(--clr-accent); }

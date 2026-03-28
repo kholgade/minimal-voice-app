@@ -1,0 +1,164 @@
+/* ══════════════════════════════════════════════════════
+   SHARED COMPONENTS
+   ══════════════════════════════════════════════════════ */
+
+/* ── Utilities ──────────────────────────────────────── */
+.hidden { display: none !important; }
+.muted  { color: var(--clr-muted); }
+
+/* ── Brand ──────────────────────────────────────────── */
+.brand {
+  display:     flex;
+  align-items: center;
+  gap:         var(--sp-2);
+  flex-shrink: 0;
+}
+
+.brand-icon {
+  width:            30px;
+  height:           30px;
+  background:       var(--clr-accent);
+  border-radius:    var(--radius-md);
+  display:          grid;
+  place-items:      center;
+  font-weight:      var(--weight-bold);
+  font-size:        var(--text-lg);
+  color:            #fff;
+  flex-shrink:      0;
+}
+
+.brand-name {
+  font-weight:  var(--weight-semibold);
+  font-size:    var(--text-lg);
+  white-space:  nowrap;
+}
+
+/* ── Search ─────────────────────────────────────────── */
+.search-wrap {
+  position:    relative;
+  max-width:   480px;
+  width:       100%;
+  justify-self: center;
+}
+
+.search-icon {
+  position:    absolute;
+  left:        var(--sp-3);
+  top:         50%;
+  transform:   translateY(-50%);
+  color:       var(--clr-muted);
+  font-size:   var(--text-lg);
+  pointer-events: none;
+  line-height: 1;
+}
+
+.search-input {
+  width:         100%;
+  padding:       7px var(--sp-3) 7px 32px;
+  background:    var(--clr-card);
+  border:        1px solid var(--clr-border);
+  border-radius: var(--radius-md);
+  color:         var(--clr-text);
+  font-size:     var(--text-sm);
+}
+
+.search-input:focus {
+  outline:      none;
+  border-color: var(--clr-accent);
+}
+
+/* ── Icon button ────────────────────────────────────── */
+.icon-btn {
+  width:         32px;
+  height:        32px;
+  display:       grid;
+  place-items:   center;
+  background:    var(--clr-card);
+  border:        1px solid var(--clr-border);
+  border-radius: var(--radius-md);
+  color:         var(--clr-muted);
+  font-size:     var(--text-lg);
+  transition:    color var(--ease), border-color var(--ease);
+}
+
+.icon-btn:hover {
+  color:        var(--clr-text);
+  border-color: var(--clr-border-lite);
+}
+
+/* ── Panel header ───────────────────────────────────── */
+.panel-hd {
+  display:         flex;
+  align-items:     center;
+  justify-content: space-between;
+  padding:         var(--sp-4) var(--sp-4) var(--sp-2);
+  font-weight:     var(--weight-semibold);
+  font-size:       var(--text-md);
+  flex-shrink:     0;
+}
+
+.chevron-btn,
+.close-btn {
+  background:    none;
+  border:        none;
+  color:         var(--clr-muted);
+  font-size:     var(--text-md);
+  padding:       var(--sp-1) var(--sp-1);
+  border-radius: var(--radius-sm);
+  transition:    color var(--ease);
+  line-height:   1;
+}
+
+.chevron-btn:hover,
+.close-btn:hover {
+  color: var(--clr-text);
+}
+
+/* ── Section label ──────────────────────────────────── */
+.section-lbl {
+  padding:        var(--sp-1) var(--sp-4) var(--sp-2);
+  font-size:      var(--text-xs);
+  font-weight:    var(--weight-bold);
+  color:          var(--clr-muted);
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-wide);
+  flex-shrink:    0;
+}
+
+/* ── Connection dot ─────────────────────────────────── */
+.conn-dot {
+  width:         8px;
+  height:        8px;
+  border-radius: var(--radius-full);
+  background:    var(--clr-muted);
+  flex-shrink:   0;
+}
+
+.conn-dot.ok    { background: var(--clr-green); }
+.conn-dot.busy  { background: var(--clr-accent); }
+.conn-dot.error { background: var(--clr-red); }
+
+/* ── Status pill ────────────────────────────────────── */
+.status-pill {
+  display:       flex;
+  align-items:   center;
+  gap:           var(--sp-2);
+  padding:       var(--sp-1) var(--sp-3);
+  background:    var(--clr-card);
+  border:        1px solid var(--clr-border);
+  border-radius: var(--radius-full);
+  font-size:     var(--text-xs);
+  color:         var(--clr-muted);
+}
+
+.status-dot {
+  width:         6px;
+  height:        6px;
+  border-radius: var(--radius-full);
+  background:    var(--clr-muted);
+  flex-shrink:   0;
+}
+
+.status-dot.ok    { background: var(--clr-green); }
+.status-dot.busy  { background: var(--clr-accent); animation: blink 1s infinite; }
+.status-dot.error { background: var(--clr-red); }

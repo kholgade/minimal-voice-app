@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Config — Voice Agent</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body class="config-page">
+<div id="app">
+
+  <header id="topbar">
+    <div class="brand">
+      <div class="brand-icon">V</div>
+      <span class="brand-name">Voice Agent</span>
+    </div>
+    <div class="search-wrap"></div>
+    <div class="topbar-right">
+      <a href="/" class="icon-btn" title="Back">←</a>
+    </div>
+  </header>
+
+  <div id="config-wrap">
+    <form id="cfg" onsubmit="save(event)">
+
+      <div class="config-section">
+        <div class="config-section-title">LLM Provider</div>
+
+        <div class="field">
+          <label class="field-label" for="cfg-provider">Provider</label>
+          <select id="cfg-provider" class="form-select" name="LLM_PROVIDER"
+                  onchange="toggleProvider(this.value)">
+            <option value="ollama">Ollama</option>
+            <option value="openai">OpenAI / Compatible</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label class="field-label" for="cfg-model">Model</label>
+          <input id="cfg-model" class="form-input" type="text" name="LLM_MODEL" placeholder="mistral">
+        </div>
+
+        <div id="ollama-fields">
+          <div class="field">
+            <label class="field-label" for="cfg-ollama-url">Ollama URL</label>
+            <input id="cfg-ollama-url" class="form-input" type="text" name="OLLAMA_URL"
+                   placeholder="http://localhost:11434">
+          </div>
+        </div>
+
+        <div id="openai-fields" class="hidden">
+          <div class="field-group">
+            <div class="field">
+              <label class="field-label" for="cfg-base-url">Base URL</label>
+              <input id="cfg-base-url" class="form-input" type="text" name="OPENAI_BASE_URL"
+                     placeholder="https://api.openai.com/v1">
+            </div>
+            <div class="field">
+              <label class="field-label" for="cfg-api-key">API Key</label>
+              <input id="cfg-api-key" class="form-input" type="password" name="OPENAI_API_KEY"
+                     placeholder="sk-…">
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="config-section">
+        <div class="config-section-title">Generation</div>
+
+        <div class="field">
+          <label class="field-label" for="cfg-temp">Temperature</label>
+          <div class="range-row">
+            <input id="cfg-temp" class="range-slider" type="range" name="TEMPERATURE"
+                   min="0" max="2" step="0.05" value="0.7"
+                   oninput="document.getElementById('temp-val').textContent = parseFloat(this.value).toFixed(2)">
+            <span id="temp-val" class="range-val">0.70</span>
+          </div>
+        </div>
+
+        <div class="field">
+          <label class="field-label" for="cfg-topp">Top P</label>
+          <div class="range-row">
+            <input id="cfg-topp" class="range-slider" type="range" name="TOP_P"
+                   min="0" max="1" step="0.05" value="0.9"
+                   oninput="document.getElementById('topp-val').textContent = parseFloat(this.value).toFixed(2)">
+            <span id="topp-val" class="range-val">0.90</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="config-section">
+        <div class="config-section-title">Voice</div>
+
+        <div class="field">
+          <label class="field-label" for="cfg-voice">TTS Voice</label>
+          <select id="cfg-voice" class="form-select" name="TTS_VOICE">
+            <option value="af_bella">Bella (Friendly)</option>
+            <option value="bf_alice">Alice (Professional)</option>
+            <option value="bf_emma">Emma (Energetic)</option>
+            <option value="am_adam">Adam (Male)</option>
+          </select>
+        </div>
+      </div>
+
+      <button type="submit" class="save-btn">Save Configuration</button>
+      <div id="save-msg" class="save-message"></div>
+
+    </form>
+  </div>
+
+</div>
+<script>
+  function toggleProvider(val) {
+    document.getElementById('ollama-fields').classList.toggle('hidden', val !== 'ollama');
+    document.getElementById('openai-fields').classList.toggle('hidden', val !== 'openai');
+  }
+
+  async function load() {
+    const cfg = await fetch('/api/config').then(r => r.json());
+    const form = document.getElementById('cfg');
+    for (const [k, v] of Object.entries(cfg)) {
+      const el = form.querySelector(`[name="${k}"]`);
+      if (!el) continue;
+      el.value = v;
+      if (k === 'TEMPERATURE') document.getElementById('temp-val').textContent = parseFloat(v).toFixed(2);
+      if (k === 'TOP_P')       document.getElementById('topp-val').textContent = parseFloat(v).toFixed(2);
+    }
+    if (cfg.LLM_PROVIDER) toggleProvider(cfg.LLM_PROVIDER);
+  }
+
+  async function save(e) {
+    e.preventDefault();
+    const data = Object.fromEntries(
+      [...e.target.querySelectorAll('[name]')].map(el => [el.name, el.value])
+    );
+    const res = await fetch('/api/config', {
+      method:  'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body:    JSON.stringify(data),
+    }).then(r => r.json());
+    const el = document.getElementById('save-msg');
+    el.textContent = res.message || (res.ok ? 'Saved!' : 'Error saving');
+    el.className   = 'save-message ' + (res.ok ? 'ok' : 'err');
+  }
+
+  load();
+</script>
+</body>
+</html>
