@@ -34,7 +34,8 @@ function loadConfig() {
 }
 loadConfig();
 
-const PORT = cfg.PORT || process.env.PORT || 3000;
+// process.env.PORT takes priority — Cloud Run injects PORT=8080
+const PORT = process.env.PORT || cfg.PORT || 3000;
 const UPLOAD_DIR = path.join(require('os').tmpdir(), 'voice-agent');
 if (!fs.existsSync(UPLOAD_DIR)) fs.mkdirSync(UPLOAD_DIR, { recursive: true });
 

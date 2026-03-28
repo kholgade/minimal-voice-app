@@ -50,7 +50,7 @@ print('Done.')"
 # ── Runtime ───────────────────────────────────────────────────────────────────
 COPY supervisord.conf /etc/supervisord.conf
 
-EXPOSE 3000
+EXPOSE 8080
 
 # recordings/ is expected to be a mounted volume for persistence
 VOLUME ["/app/recordings"]
