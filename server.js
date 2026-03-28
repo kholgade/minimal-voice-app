@@ -136,10 +136,11 @@ async function handleInput(ws, sessionId, userText) {
 }
 
 async function* streamLLM(messages) {
-  const provider = process.env.LLM_PROVIDER || 'ollama';
-  const model = process.env.LLM_MODEL || 'mistral';
+  const provider = process.env.LLM_PROVIDER || 'openai';
+  const model = process.env.LLM_MODEL || 'gpt-4o';
   const temperature = parseFloat(process.env.TEMPERATURE || '0.7');
   const topP = parseFloat(process.env.TOP_P || '0.9');
+  const maxTokens = parseInt(process.env.MAX_TOKENS || '1024');
 
   if (provider === 'ollama') {
     const resp = await axios.post(
@@ -160,11 +161,79 @@ async function* streamLLM(messages) {
         } catch {}
       }
     }
+
+  } else if (provider === 'anthropic') {
+    const systemMsg = messages.find(m => m.role === 'system')?.content || '';
+    const userMessages = messages.filter(m => m.role !== 'system');
+    const resp = await axios.post(
+      `${process.env.ANTHROPIC_BASE_URL || 'https://api.anthropic.com'}/v1/messages`,
+      {
+        model,
+        max_tokens: maxTokens,
+        system: systemMsg,
+        messages: userMessages,
+        stream: true,
+        temperature,
+        top_p: topP,
+      },
+      {
+        headers: {
+          'x-api-key': process.env.ANTHROPIC_API_KEY || '',
+          'anthropic-version': '2023-06-01',
+          'content-type': 'application/json',
+        },
+        responseType: 'stream',
+      }
+    );
+    let buf = '';
+    for await (const chunk of resp.data) {
+      buf += chunk.toString();
+      const lines = buf.split('\n');
+      buf = lines.pop();
+      for (const line of lines) {
+        if (!line.startsWith('data: ')) continue;
+        try {
+          const obj = JSON.parse(line.slice(6));
+          if (obj.type === 'content_block_delta' && obj.delta?.text) yield obj.delta.text;
+        } catch {}
+      }
+    }
+
+  } else if (provider === 'google') {
+    const systemMsg = messages.find(m => m.role === 'system')?.content || '';
+    const contents = messages
+      .filter(m => m.role !== 'system')
+      .map(m => ({ role: m.role === 'assistant' ? 'model' : 'user', parts: [{ text: m.content }] }));
+    const body = {
+      contents,
+      generationConfig: { temperature, topP, maxOutputTokens: maxTokens },
+    };
+    if (systemMsg) body.system_instruction = { parts: [{ text: systemMsg }] };
+    const resp = await axios.post(
+      `${process.env.GOOGLE_BASE_URL || 'https://generativelanguage.googleapis.com'}/v1beta/models/${model}:streamGenerateContent?alt=sse&key=${process.env.GOOGLE_API_KEY || ''}`,
+      body,
+      { responseType: 'stream' }
+    );
+    let buf = '';
+    for await (const chunk of resp.data) {
+      buf += chunk.toString();
+      const lines = buf.split('\n');
+      buf = lines.pop();
+      for (const line of lines) {
+        if (!line.startsWith('data: ')) continue;
+        try {
+          const obj = JSON.parse(line.slice(6));
+          const text = obj.candidates?.[0]?.content?.parts?.[0]?.text;
+          if (text) yield text;
+        } catch {}
+      }
+    }
+
   } else {
-    // OpenAI-compatible
+    // OpenAI-compatible (default)
     const resp = await axios.post(
       `${process.env.OPENAI_BASE_URL || 'https://api.openai.com/v1'}/chat/completions`,
-      { model, messages, stream: true, temperature, top_p: topP },
+      { model, messages, stream: true, temperature, top_p: topP, max_tokens: maxTokens },
       {
         headers: { Authorization: `Bearer ${process.env.OPENAI_API_KEY || ''}` },
         responseType: 'stream',

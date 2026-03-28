@@ -30,25 +30,21 @@
           <label class="field-label" for="cfg-provider">Provider</label>
           <select id="cfg-provider" class="form-select" name="LLM_PROVIDER"
                   onchange="toggleProvider(this.value)">
-            <option value="ollama">Ollama</option>
-            <option value="openai">OpenAI / Compatible</option>
+            <option value="openai">OpenAI</option>
+            <option value="anthropic">Anthropic</option>
+            <option value="google">Google Gemini</option>
+            <option value="ollama">Ollama (local)</option>
           </select>
         </div>
 
         <div class="field">
           <label class="field-label" for="cfg-model">Model</label>
-          <input id="cfg-model" class="form-input" type="text" name="LLM_MODEL" placeholder="mistral">
+          <input id="cfg-model" class="form-input" type="text" name="LLM_MODEL" placeholder="gpt-4o">
+          <datalist id="model-suggestions"></datalist>
         </div>
 
-        <div id="ollama-fields">
-          <div class="field">
-            <label class="field-label" for="cfg-ollama-url">Ollama URL</label>
-            <input id="cfg-ollama-url" class="form-input" type="text" name="OLLAMA_URL"
-                   placeholder="http://localhost:11434">
-          </div>
-        </div>
-
-        <div id="openai-fields" class="hidden">
+        <!-- OpenAI fields -->
+        <div id="openai-fields">
           <div class="field-group">
             <div class="field">
               <label class="field-label" for="cfg-base-url">Base URL</label>
@@ -60,6 +56,33 @@
               <input id="cfg-api-key" class="form-input" type="password" name="OPENAI_API_KEY"
                      placeholder="sk-…">
             </div>
+          </div>
+        </div>
+
+        <!-- Anthropic fields -->
+        <div id="anthropic-fields" class="hidden">
+          <div class="field">
+            <label class="field-label" for="cfg-anthropic-key">API Key</label>
+            <input id="cfg-anthropic-key" class="form-input" type="password" name="ANTHROPIC_API_KEY"
+                   placeholder="sk-ant-…">
+          </div>
+        </div>
+
+        <!-- Google fields -->
+        <div id="google-fields" class="hidden">
+          <div class="field">
+            <label class="field-label" for="cfg-google-key">API Key</label>
+            <input id="cfg-google-key" class="form-input" type="password" name="GOOGLE_API_KEY"
+                   placeholder="AIza…">
+          </div>
+        </div>
+
+        <!-- Ollama fields -->
+        <div id="ollama-fields" class="hidden">
+          <div class="field">
+            <label class="field-label" for="cfg-ollama-url">Ollama URL</label>
+            <input id="cfg-ollama-url" class="form-input" type="text" name="OLLAMA_URL"
+                   placeholder="http://localhost:11434">
           </div>
         </div>
       </div>
@@ -86,6 +109,12 @@
             <span id="topp-val" class="range-val">0.90</span>
           </div>
         </div>
+
+        <div class="field">
+          <label class="field-label" for="cfg-maxtokens">Max Tokens</label>
+          <input id="cfg-maxtokens" class="form-input" type="number" name="MAX_TOKENS"
+                 min="64" max="8192" step="64" value="1024" placeholder="1024">
+        </div>
       </div>
 
       <div class="config-section">
@@ -110,9 +139,28 @@
 
 </div>
 <script>
+  const MODEL_PRESETS = {
+    openai:    ['gpt-4o', 'gpt-4o-mini', 'gpt-4-turbo', 'gpt-3.5-turbo'],
+    anthropic: ['claude-sonnet-4-6', 'claude-opus-4-6', 'claude-haiku-4-5-20251001'],
+    google:    ['gemini-2.0-flash', 'gemini-2.0-flash-lite', 'gemini-1.5-pro'],
+    ollama:    ['mistral', 'llama3', 'phi3', 'gemma2'],
+  };
+
+  const DEFAULT_MODEL = {
+    openai: 'gpt-4o', anthropic: 'claude-sonnet-4-6',
+    google: 'gemini-2.0-flash', ollama: 'mistral',
+  };
+
   function toggleProvider(val) {
-    document.getElementById('ollama-fields').classList.toggle('hidden', val !== 'ollama');
-    document.getElementById('openai-fields').classList.toggle('hidden', val !== 'openai');
+    ['openai', 'anthropic', 'google', 'ollama'].forEach(p => {
+      document.getElementById(`${p}-fields`).classList.toggle('hidden', p !== val);
+    });
+    // Update model placeholder and suggestions
+    const modelInput = document.getElementById('cfg-model');
+    modelInput.placeholder = DEFAULT_MODEL[val] || '';
+    const dl = document.getElementById('model-suggestions');
+    dl.innerHTML = (MODEL_PRESETS[val] || []).map(m => `<option value="${m}">`).join('');
+    modelInput.setAttribute('list', 'model-suggestions');
   }
 
   async function load() {
@@ -125,7 +173,7 @@
       if (k === 'TEMPERATURE') document.getElementById('temp-val').textContent = parseFloat(v).toFixed(2);
       if (k === 'TOP_P')       document.getElementById('topp-val').textContent = parseFloat(v).toFixed(2);
     }
-    if (cfg.LLM_PROVIDER) toggleProvider(cfg.LLM_PROVIDER);
+    toggleProvider(cfg.LLM_PROVIDER || 'openai');
   }
 
   async function save(e) {
