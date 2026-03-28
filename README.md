@@ -1,1 +1,0 @@
-# minimal-voice-app
