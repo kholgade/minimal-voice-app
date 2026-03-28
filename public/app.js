@@ -344,8 +344,8 @@ function seedSessions() {
         </svg>
       </div>
       <div class="sc-foot">
-        <button class="sc-icon-btn" title="Voice">🎤</button>
-        <button class="sc-icon-btn" title="Transcript">⊡</button>
+        <button class="sc-icon-btn" title="Voice"><svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M12 1a3 3 0 0 1 3 3v8a3 3 0 0 1-6 0V4a3 3 0 0 1 3-3zm5.5 9a.5.5 0 0 1 .5.5A6 6 0 0 1 12.5 16v2H15a.5.5 0 0 1 0 1H9a.5.5 0 0 1 0-1h2.5v-2A6 6 0 0 1 6 10.5a.5.5 0 0 1 1 0 5 5 0 0 0 10 0 .5.5 0 0 1 .5-.5z"/></svg></button>
+        <button class="sc-icon-btn" title="Transcript"><svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/></svg></button>
       </div>`;
     list.appendChild(card);
   });
