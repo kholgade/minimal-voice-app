@@ -9,7 +9,7 @@ def get_model():
     if _model is None:
         from faster_whisper import WhisperModel
         _model = WhisperModel(
-            os.getenv('WHISPER_MODEL', 'base'),
+            os.getenv('WHISPER_MODEL', 'small'),
             device=os.getenv('WHISPER_DEVICE', 'cpu'),
             compute_type='int8',
         )

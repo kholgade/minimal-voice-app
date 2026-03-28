@@ -50,11 +50,14 @@ pip install -r requirements.txt
 # ── 3. Pre-download Whisper model ──────────────────────────────────────────────
 echo ""
 echo ">>> Pre-downloading Whisper STT model..."
-WHISPER_MODEL="${WHISPER_MODEL:-base}"
+# Default: small — best accuracy/speed trade-off on CPU
+# Options: tiny | base | small | medium | large-v3
+WHISPER_MODEL="${WHISPER_MODEL:-small}"
+echo "  Model: $WHISPER_MODEL  (override with: WHISPER_MODEL=medium ./setup.sh)"
 python3 - <<PYEOF
 import os
 from faster_whisper import WhisperModel
-model_name = os.environ.get('WHISPER_MODEL', 'base')
+model_name = os.environ.get('WHISPER_MODEL', 'small')
 print(f'  Downloading Whisper "{model_name}" model (CPU/int8)...')
 WhisperModel(model_name, device='cpu', compute_type='int8')
 print(f'  Whisper "{model_name}" model ready.')

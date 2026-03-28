@@ -36,10 +36,14 @@ Write-Host ">>> Installing Python dependencies..."
 
 # ── 3. Pre-download Whisper model ──────────────────────────────────────────────
 Write-Host "`n>>> Pre-downloading Whisper STT model..."
+# Default: small — best accuracy/speed trade-off on CPU
+# Override: $env:WHISPER_MODEL = "medium"; .\setup.ps1
+if (-not $env:WHISPER_MODEL) { $env:WHISPER_MODEL = "small" }
+Write-Host "  Model: $($env:WHISPER_MODEL)  (options: tiny | base | small | medium | large-v3)"
 $whisperScript = @"
 import os
 from faster_whisper import WhisperModel
-model_name = os.environ.get('WHISPER_MODEL', 'base')
+model_name = os.environ.get('WHISPER_MODEL', 'small')
 print(f'  Downloading Whisper "{model_name}" model (CPU/int8)...')
 WhisperModel(model_name, device='cpu', compute_type='int8')
 print(f'  Whisper "{model_name}" model ready.')
