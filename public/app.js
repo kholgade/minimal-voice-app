@@ -20,7 +20,8 @@ const SILENCE_DELAY_MS  = 3000;
 
 // ── WebSocket ──────────────────────────────────────────
 function connect() {
-  ws = new WebSocket(`ws://${location.host}`);
+  const proto = location.protocol === 'https:' ? 'wss:' : 'ws:';
+  ws = new WebSocket(`${proto}//${location.host}`);
 
   ws.onopen = () => {
     setStatus('Ready', 'ok');
